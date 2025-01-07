@@ -32,10 +32,6 @@ yarn-error.log*
 .env.test.local
 .env.production.local
 
-# Serverless Parameter files (if containing sensitive data)
-custom-parameter-*.yml
-!custom-parameter-example.yml
-
 # AWS credentials
 .aws/
 credentials

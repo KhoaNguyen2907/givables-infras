@@ -92,34 +92,34 @@ resources:
     GivablesTableNameParameter:
       Type: AWS::SSM::Parameter
       Properties:
-        Name: /givables/${self:provider.stage}/table-name
+        Name: ${self:custom.givablesTableNameSsmParameterPath}
         Type: String
         Value: !Ref GivablesTable
 
     GivablesTableArnParameter:
       Type: AWS::SSM::Parameter
       Properties:
-        Name: /givables/${self:provider.stage}/table-arn
+        Name: ${self:custom.givablesTableArnSsmParameterPath}
         Type: String
         Value: !GetAtt GivablesTable.Arn
 
     GivablesUserPoolIdParameter:
       Type: AWS::SSM::Parameter
       Properties:
-        Name: /givables/${self:provider.stage}/user-pool-id
+        Name: ${self:custom.givablesUserPoolIdSsmParameterPath}
         Type: String
         Value: !Ref GivablesUserPool
     GivablesUserPoolArnParameter:
       Type: AWS::SSM::Parameter
       Properties:
-        Name: /givables/${self:provider.stage}/user-pool-arn
+        Name: ${self:custom.givablesUserPoolArnSsmParameterPath}
         Type: String
         Value: !GetAtt GivablesUserPool.Arn
 
     GivablesUserPoolClientIdParameter:
       Type: AWS::SSM::Parameter
       Properties:
-        Name: /givables/${self:provider.stage}/user-pool-client-id
+        Name: ${self:custom.givablesUserPoolClientIdSsmParameterPath}
         Type: String
         Value: !Ref GivablesUserPoolClient
 

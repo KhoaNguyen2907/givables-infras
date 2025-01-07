@@ -6,3 +6,9 @@ custom:
   emailVerificationMessage: "Your verification code is {####}"
   emailVerificationSubject: "Givables: Verify your email"
   userPoolDomain: givables-dev
+
+  givablesTableNameSsmParameterPath: /givables/dev/table-name
+  givablesTableArnSsmParameterPath: /givables/dev/table-arn
+  givablesUserPoolIdSsmParameterPath: /givables/dev/user-pool-id
+  givablesUserPoolArnSsmParameterPath: /givables/dev/user-pool-arn
+  givablesUserPoolClientIdSsmParameterPath: /givables/dev/user-pool-client-id
