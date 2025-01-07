@@ -1,0 +1,140 @@
+service: givables-service
+
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  region: ap-southeast-1
+  stage: ${opt:stage, 'dev'}
+  environment:
+    STAGE: ${self:provider.stage}
+    REGION: ${self:provider.region}
+
+custom: ${file(./custom-parameter-${self:provider.stage}.yml):custom}
+
+resources:
+  Resources:
+    GivablesTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:custom.tableName}
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: PK
+            AttributeType: S
+          - AttributeName: SK
+            AttributeType: S
+        KeySchema:
+          - AttributeName: PK
+            KeyType: HASH
+          - AttributeName: SK
+            KeyType: RANGE
+
+    GivablesUserPool:
+      Type: AWS::Cognito::UserPool
+      Properties:
+        UserPoolName: ${self:custom.userPoolName}
+        UsernameAttributes:
+          - email
+        Policies:
+          PasswordPolicy:
+            MinimumLength: 8
+            RequireLowercase: true
+            RequireNumbers: true
+            RequireUppercase: true
+        AutoVerifiedAttributes:
+          - email
+        EmailVerificationMessage: ${self:custom.emailVerificationMessage}
+        EmailVerificationSubject: ${self:custom.emailVerificationSubject}
+        AccountRecoverySetting:
+          RecoveryMechanisms:
+            - Name: verified_email
+              Priority: 1
+
+    GivablesUserPoolDomain:
+      Type: AWS::Cognito::UserPoolDomain
+      Properties:
+        Domain: ${self:custom.userPoolDomain}
+        UserPoolId: !Ref GivablesUserPool
+
+    GivablesUserPoolClient:
+      Type: AWS::Cognito::UserPoolClient
+      Properties:
+        UserPoolId: !Ref GivablesUserPool
+        ClientName: ${self:custom.clientName}
+        GenerateSecret: false
+        ExplicitAuthFlows:
+          - ALLOW_USER_PASSWORD_AUTH
+          - ALLOW_REFRESH_TOKEN_AUTH
+        EnableTokenRevocation: true
+        PreventUserExistenceErrors: ENABLED
+        CallbackURLs:
+          - ${self:custom.callbackUrl}
+        AllowedOAuthFlows:
+          - implicit
+        AllowedOAuthScopes:
+          - email
+          - openid
+          - profile
+        AllowedOAuthFlowsUserPoolClient: true
+        SupportedIdentityProviders:
+          - COGNITO
+
+    AdminGroup:
+      Type: AWS::Cognito::UserPoolGroup
+      Properties:
+        GroupName: admin
+        Description: Administrator group
+        UserPoolId: !Ref GivablesUserPool
+        Precedence: 0
+
+    GivablesTableNameParameter:
+      Type: AWS::SSM::Parameter
+      Properties:
+        Name: /givables/${self:provider.stage}/table-name
+        Type: String
+        Value: !Ref GivablesTable
+
+    GivablesTableArnParameter:
+      Type: AWS::SSM::Parameter
+      Properties:
+        Name: /givables/${self:provider.stage}/table-arn
+        Type: String
+        Value: !GetAtt GivablesTable.Arn
+
+    GivablesUserPoolIdParameter:
+      Type: AWS::SSM::Parameter
+      Properties:
+        Name: /givables/${self:provider.stage}/user-pool-id
+        Type: String
+        Value: !Ref GivablesUserPool
+    GivablesUserPoolArnParameter:
+      Type: AWS::SSM::Parameter
+      Properties:
+        Name: /givables/${self:provider.stage}/user-pool-arn
+        Type: String
+        Value: !GetAtt GivablesUserPool.Arn
+
+    GivablesUserPoolClientIdParameter:
+      Type: AWS::SSM::Parameter
+      Properties:
+        Name: /givables/${self:provider.stage}/user-pool-client-id
+        Type: String
+        Value: !Ref GivablesUserPoolClient
+
+    UserGroup:
+      Type: AWS::Cognito::UserPoolGroup
+      Properties:
+        GroupName: user
+        Description: Regular user group
+        UserPoolId: !Ref GivablesUserPool
+        Precedence: 1
+
+  Outputs:
+    TableName:
+      Value: !Ref GivablesTable
+    UserPoolId:
+      Value: !Ref GivablesUserPool
+    UserPoolClientId:
+      Value: !Ref GivablesUserPoolClient 

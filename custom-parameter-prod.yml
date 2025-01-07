@@ -1,0 +1,8 @@
+ custom:
+  tableName: givables-db
+  userPoolName: givables-prod-user-pool
+  clientName: givables-prod-client
+  callbackUrl: https://givables.app
+  emailVerificationMessage: "Your verification code is {####}"
+  emailVerificationSubject: "Givables: Verify your email"
+  userPoolDomain: givables
