@@ -1,4 +1,4 @@
-service: givables-service
+service: givables-infras
 
 frameworkVersion: '3'
 
