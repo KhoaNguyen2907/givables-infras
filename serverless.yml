@@ -90,7 +90,7 @@ resources:
         ClientName: ${self:custom.clientName}
         GenerateSecret: false
         ExplicitAuthFlows:
-          - ALLOW_USER_PASSWORD_AUTH
+          - ALLOW_USER_SRP_AUTH
           - ALLOW_REFRESH_TOKEN_AUTH
         EnableTokenRevocation: true
         PreventUserExistenceErrors: ENABLED
